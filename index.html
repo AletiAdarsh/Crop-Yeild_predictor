@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Crop Yield Predictor</title>
+  <style>
+    body { font-family: sans-serif; max-width: 480px; margin: 2em auto; }
+    label { display: block; margin-top: 12px; }
+    select, input { width: 100%; padding: 6px; }
+    button { margin-top: 18px; padding: 8px 20px; }
+    #result { margin-top: 24px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h2>🌾 Crop Yield Predictor</h2>
+  <form id="predict-form">
+    <label>Rainfall (mm):
+      <input type="number" step="any" name="Rainfall_mm" required>
+    </label>
+    <label>Temperature (°C):
+      <input type="number" step="any" name="Temperature_Celsius" required>
+    </label>
+    <label>Fertilizer Used:
+      <select name="Fertilizer_Used" required>
+        <option value="1">Yes</option>
+        <option value="0">No</option>
+      </select>
+    </label>
+    <label>Irrigation Used:
+      <select name="Irrigation_Used" required>
+        <option value="1">Yes</option>
+        <option value="0">No</option>
+      </select>
+    </label>
+    <label>Days to Harvest:
+      <input type="number" step="1" name="Days_to_Harvest" required>
+    </label>
+    <label>Region:
+      <select name="Region" required>
+        <option value="North">North</option>
+        <option value="South">South</option>
+        <option value="West">West</option>
+      </select>
+    </label>
+    <label>Soil Type:
+      <select name="Soil_Type" required>
+        <option value="Clay">Clay</option>
+        <option value="Loam">Loam</option>
+        <option value="Peaty">Peaty</option>
+        <option value="Sandy">Sandy</option>
+        <option value="Silt">Silt</option>
+      </select>
+    </label>
+    <label>Crop:
+      <select name="Crop" required>
+        <option value="Maize">Maize</option>
+        <option value="Cotton">Cotton</option>
+        <option value="Rice">Rice</option>
+        <option value="Soybean">Soybean</option>
+        <option value="Wheat">Wheat</option>
+      </select>
+    </label>
+    <label>Weather Condition:
+      <select name="Weather_Condition" required>
+        <option value="Rainy">Rainy</option>
+        <option value="Sunny">Sunny</option>
+      </select>
+    </label>
+    <button type="submit">Predict</button>
+  </form>
+  <div id="result"></div>
+  <script>
+    const API_URL = "https://multi-model-api.onrender.com/predict/crop";
+    const regionFields = ["Region_North", "Region_South", "Region_West"];
+    const soilFields = ["Soil_Type_Clay", "Soil_Type_Loam", "Soil_Type_Peaty", "Soil_Type_Sandy", "Soil_Type_Silt"];
+    const cropFields = ["Crop_Cotton", "Crop_Maize", "Crop_Rice", "Crop_Soybean", "Crop_Wheat"];
+    const weatherFields = ["Weather_Condition_Rainy", "Weather_Condition_Sunny"];
+
+    const form = document.getElementById('predict-form');
+    const resultDiv = document.getElementById('result');
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      resultDiv.textContent = 'Predicting...';
+
+      // Grab values
+      const d = Object.fromEntries(new FormData(form).entries());
+      let features = {};
+
+      // Numeric & boolean fields
+      features["Rainfall_mm"] = parseFloat(d.Rainfall_mm);
+      features["Temperature_Celsius"] = parseFloat(d.Temperature_Celsius);
+      features["Fertilizer_Used"] = Number(d.Fertilizer_Used);
+      features["Irrigation_Used"] = Number(d.Irrigation_Used);
+      features["Days_to_Harvest"] = parseInt(d.Days_to_Harvest);
+
+      // One-hot encode regions
+      regionFields.forEach(f => features[f] = 0);
+      features[`Region_${d.Region}`] = 1;
+
+      // One-hot encode soils
+      soilFields.forEach(f => features[f] = 0);
+      features[`Soil_Type_${d.Soil_Type}`] = 1;
+
+      // One-hot encode crop
+      cropFields.forEach(f => features[f] = 0);
+      features[`Crop_${d.Crop}`] = 1;
+
+      // One-hot encode weather
+      weatherFields.forEach(f => features[f] = 0);
+      features[`Weather_Condition_${d.Weather_Condition}`] = 1;
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ features })
+        });
+        const out = await res.json();
+        if (res.ok) {
+          resultDiv.textContent = 'Predicted Yield: ' + out.prediction;
+        } else {
+          resultDiv.textContent = 'Error: ' + (out.detail || 'Unknown error');
+        }
+      } catch (err) {
+        resultDiv.textContent = 'Error: ' + err;
+      }
+    };
+  </script>
+</body>
+</html>
