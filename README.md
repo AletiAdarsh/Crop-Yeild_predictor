@@ -20,6 +20,8 @@ Try the Web App
 
 Visit [link](https://aletiadarsh.github.io/Crop-Yeild_predictor/)
 
+[DataSet Link](https://www.kaggle.com/datasets/samuelotiattakorah/agriculture-crop-yield)
+
 Enter your field data (rainfall, fertilizer, soil, crop type, etc.)
 
 Hit “Predict” and see your crop’s estimated yield (in tons)!
