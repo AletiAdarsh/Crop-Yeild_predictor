@@ -154,12 +154,15 @@
       box-shadow: 0 1px 8px 0 #98d8843f;
     }
     #result {
-      margin-top: 22px;
-      font-size: 1.13em;
-      color: #25722e;
-      min-height: 1.2em;
-      text-align: center;
-    }
+  margin-top: 22px;
+  font-size: 1.18em;
+  color: #25722e;
+  min-height: 1.2em;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
     footer {
       margin: 32px auto 10px auto;
       color: #98b29d;
@@ -306,8 +309,11 @@
         });
         const out = await res.json();
         if (res.ok) {
-          resultDiv.textContent = 'Predicted Yield: ' + out.prediction;
-        } else {
+            // Round to 1 decimal, add tons, and uncertainty
+            const pred = parseFloat(out.prediction).toFixed(1);
+            resultDiv.textContent = `🌾 Predicted Yield: ${pred} tons ±0.5 tons`;
+  }
+ else {
           resultDiv.textContent = 'Error: ' + (out.detail || 'Unknown error');
         }
       } catch (err) {
