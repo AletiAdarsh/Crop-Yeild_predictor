@@ -3,72 +3,256 @@
 <head>
   <meta charset="UTF-8">
   <title>Crop Yield Predictor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;400&display=swap" rel="stylesheet">
   <style>
-    body { font-family: sans-serif; max-width: 480px; margin: 2em auto; }
-    label { display: block; margin-top: 12px; }
-    select, input { width: 100%; padding: 6px; }
-    button { margin-top: 18px; padding: 8px 20px; }
-    #result { margin-top: 24px; font-weight: bold; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at 60% 10%, #e8fadf 40%, #d0edb3 100%);
+      font-family: 'Montserrat', sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 24px;
+      box-shadow: 0 8px 32px 0 rgba(34, 139, 34, 0.15);
+      padding: 2.2rem 2.2rem 1.5rem 2.2rem;
+      max-width: 400px;
+      width: 100%;
+      margin: 48px 0 24px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .card h2 {
+      margin-top: 0;
+      margin-bottom: 0.2em;
+      color: #24712b;
+      font-size: 2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+    }
+    .card p {
+      color: #60826b;
+      margin-bottom: 1.7em;
+      font-size: 1.02em;
+      text-align: center;
+      font-weight: 400;
+    }
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.1em 1.5em;
+      width: 100%;
+      margin-bottom: 1.4em;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .input-group label {
+      font-size: 1em;
+      color: #294d2f;
+      font-weight: 500;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 0.4em;
+    }
+    .input-group input[type="number"], .input-group select {
+      border: 1.2px solid #c8e6c9;
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 1em;
+      font-family: inherit;
+      background: #f9fff3;
+      transition: border 0.2s;
+      outline: none;
+    }
+    .input-group input[type="number"]:focus, .input-group select:focus {
+      border: 1.5px solid #8bc34a;
+      background: #f6fff4;
+    }
+    /* Toggle Switch Styling */
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 24px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #e7e7e7;
+      border-radius: 24px;
+      transition: background 0.2s;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: #b7e4c7;
+      border-radius: 50%;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .switch input:checked + .slider {
+      background-color: #a5d6a7;
+    }
+    .switch input:checked + .slider:before {
+      transform: translateX(16px);
+      background: #43a047;
+    }
+    .toggle span {
+      min-width: 30px;
+      font-size: 0.98em;
+      color: #6a7475;
+      margin-left: 4px;
+    }
+    /* Predict button */
+    .predict-btn {
+      width: 100%;
+      background: linear-gradient(90deg, #78d448 10%, #b6e56d 100%);
+      color: #fff;
+      font-size: 1.13em;
+      font-weight: 700;
+      padding: 12px 0;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      margin-top: 0.6em;
+      box-shadow: 0 4px 16px 0 #9fe18c3f;
+      transition: transform 0.1s, box-shadow 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6em;
+    }
+    .predict-btn:active {
+      transform: scale(0.98);
+      box-shadow: 0 1px 8px 0 #98d8843f;
+    }
+    #result {
+      margin-top: 22px;
+      font-size: 1.13em;
+      color: #25722e;
+      min-height: 1.2em;
+      text-align: center;
+    }
+    footer {
+      margin: 32px auto 10px auto;
+      color: #98b29d;
+      font-size: 0.97em;
+      text-align: center;
+    }
+    @media (max-width: 600px) {
+      .card { max-width: 99vw; padding: 1.2em 0.5em; }
+      .input-grid { grid-template-columns: 1fr; }
+      .predict-btn { font-size: 1em; padding: 11px 0; }
+    }
   </style>
 </head>
 <body>
-  <h2>🌾 Crop Yield Predictor</h2>
-  <form id="predict-form">
-    <label>Rainfall (mm):
-      <input type="number" step="any" name="Rainfall_mm" required>
-    </label>
-    <label>Temperature (°C):
-      <input type="number" step="any" name="Temperature_Celsius" required>
-    </label>
-    <label>Fertilizer Used:
-      <select name="Fertilizer_Used" required>
-        <option value="1">Yes</option>
-        <option value="0">No</option>
-      </select>
-    </label>
-    <label>Irrigation Used:
-      <select name="Irrigation_Used" required>
-        <option value="1">Yes</option>
-        <option value="0">No</option>
-      </select>
-    </label>
-    <label>Days to Harvest:
-      <input type="number" step="1" name="Days_to_Harvest" required>
-    </label>
-    <label>Region:
-      <select name="Region" required>
-        <option value="North">North</option>
-        <option value="South">South</option>
-        <option value="West">West</option>
-      </select>
-    </label>
-    <label>Soil Type:
-      <select name="Soil_Type" required>
-        <option value="Clay">Clay</option>
-        <option value="Loam">Loam</option>
-        <option value="Peaty">Peaty</option>
-        <option value="Sandy">Sandy</option>
-        <option value="Silt">Silt</option>
-      </select>
-    </label>
-    <label>Crop:
-      <select name="Crop" required>
-        <option value="Maize">Maize</option>
-        <option value="Cotton">Cotton</option>
-        <option value="Rice">Rice</option>
-        <option value="Soybean">Soybean</option>
-        <option value="Wheat">Wheat</option>
-      </select>
-    </label>
-    <label>Weather Condition:
-      <select name="Weather_Condition" required>
-        <option value="Rainy">Rainy</option>
-        <option value="Sunny">Sunny</option>
-      </select>
-    </label>
-    <button type="submit">Predict</button>
-  </form>
-  <div id="result"></div>
+  <div class="card">
+    <h2>🌱 Crop Yield Predictor</h2>
+    <p>Enter your farm’s data to estimate your crop yield.</p>
+    <form id="predict-form" autocomplete="off">
+      <div class="input-grid">
+        <div class="input-group">
+          <label>🔥 Rainfall (mm)</label>
+          <input type="number" step="any" name="Rainfall_mm" placeholder="e.g. 600" required>
+        </div>
+        <div class="input-group">
+          <label>🌡️ Temperature (°C)</label>
+          <input type="number" step="any" name="Temperature_Celsius" placeholder="e.g. 23" required>
+        </div>
+        <div class="input-group">
+          <label>🌿 Fertilizer Used</label>
+          <div class="toggle">
+            <label class="switch">
+              <input type="checkbox" name="Fertilizer_Used">
+              <span class="slider"></span>
+            </label>
+            <span id="fertilizer_status">No</span>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>💧 Irrigation Used</label>
+          <div class="toggle">
+            <label class="switch">
+              <input type="checkbox" name="Irrigation_Used">
+              <span class="slider"></span>
+            </label>
+            <span id="irrigation_status">No</span>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>🌱 Days to Harvest</label>
+          <input type="number" step="1" name="Days_to_Harvest" placeholder="e.g. 120" required>
+        </div>
+        <div class="input-group">
+          <label>📍 Region</label>
+          <select name="Region" required>
+            <option value="North">North</option>
+            <option value="South">South</option>
+            <option value="West">West</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>🧱 Soil Type</label>
+          <select name="Soil_Type" required>
+            <option value="Clay">Clay</option>
+            <option value="Loam">Loam</option>
+            <option value="Peaty">Peaty</option>
+            <option value="Sandy">Sandy</option>
+            <option value="Silt">Silt</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>🌾 Crop</label>
+          <select name="Crop" required>
+            <option value="Maize">Maize</option>
+            <option value="Cotton">Cotton</option>
+            <option value="Rice">Rice</option>
+            <option value="Soybean">Soybean</option>
+            <option value="Wheat">Wheat</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>☀️ Weather Condition</label>
+          <select name="Weather_Condition" required>
+            <option value="Rainy">Rainy</option>
+            <option value="Sunny">Sunny</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="predict-btn">🌿 Predict</button>
+      <div id="result"></div>
+    </form>
+  </div>
+  <footer>
+    © 2025 Crop Yield Predictor – Crafted for Farmers with <span style="color:#e67a7a;">♥</span>
+  </footer>
   <script>
     const API_URL = "https://multi-model-api.onrender.com/predict/crop";
     const regionFields = ["Region_North", "Region_South", "Region_West"];
@@ -76,6 +260,15 @@
     const cropFields = ["Crop_Cotton", "Crop_Maize", "Crop_Rice", "Crop_Soybean", "Crop_Wheat"];
     const weatherFields = ["Weather_Condition_Rainy", "Weather_Condition_Sunny"];
 
+    // Update toggle text
+    document.querySelector('input[name="Fertilizer_Used"]').addEventListener('change', function() {
+      document.getElementById('fertilizer_status').innerText = this.checked ? 'Yes' : 'No';
+    });
+    document.querySelector('input[name="Irrigation_Used"]').addEventListener('change', function() {
+      document.getElementById('irrigation_status').innerText = this.checked ? 'Yes' : 'No';
+    });
+
+    // Prediction logic
     const form = document.getElementById('predict-form');
     const resultDiv = document.getElementById('result');
 
@@ -83,32 +276,26 @@
       e.preventDefault();
       resultDiv.textContent = 'Predicting...';
 
-      // Grab values
-      const d = Object.fromEntries(new FormData(form).entries());
+      const fd = new FormData(form);
       let features = {};
 
-      // Numeric & boolean fields
-      features["Rainfall_mm"] = parseFloat(d.Rainfall_mm);
-      features["Temperature_Celsius"] = parseFloat(d.Temperature_Celsius);
-      features["Fertilizer_Used"] = Number(d.Fertilizer_Used);
-      features["Irrigation_Used"] = Number(d.Irrigation_Used);
-      features["Days_to_Harvest"] = parseInt(d.Days_to_Harvest);
+      features["Rainfall_mm"] = parseFloat(fd.get("Rainfall_mm"));
+      features["Temperature_Celsius"] = parseFloat(fd.get("Temperature_Celsius"));
+      features["Fertilizer_Used"] = fd.get("Fertilizer_Used") === "on" ? 1 : 0;
+      features["Irrigation_Used"] = fd.get("Irrigation_Used") === "on" ? 1 : 0;
+      features["Days_to_Harvest"] = parseInt(fd.get("Days_to_Harvest"));
 
-      // One-hot encode regions
       regionFields.forEach(f => features[f] = 0);
-      features[`Region_${d.Region}`] = 1;
+      features[`Region_${fd.get("Region")}`] = 1;
 
-      // One-hot encode soils
       soilFields.forEach(f => features[f] = 0);
-      features[`Soil_Type_${d.Soil_Type}`] = 1;
+      features[`Soil_Type_${fd.get("Soil_Type")}`] = 1;
 
-      // One-hot encode crop
       cropFields.forEach(f => features[f] = 0);
-      features[`Crop_${d.Crop}`] = 1;
+      features[`Crop_${fd.get("Crop")}`] = 1;
 
-      // One-hot encode weather
       weatherFields.forEach(f => features[f] = 0);
-      features[`Weather_Condition_${d.Weather_Condition}`] = 1;
+      features[`Weather_Condition_${fd.get("Weather_Condition")}`] = 1;
 
       try {
         const res = await fetch(API_URL, {
