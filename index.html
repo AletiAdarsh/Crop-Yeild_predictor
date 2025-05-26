@@ -311,7 +311,7 @@
         if (res.ok) {
             // Round to 1 decimal, add tons, and uncertainty
             const pred = parseFloat(out.prediction).toFixed(1);
-            resultDiv.textContent = `🌾 Predicted Yield: ${pred} tons ±0.5 tons`;
+            resultDiv.textContent = `🌾 Predicted Yield: ${pred} tons ±0.1 tons`;
   }
  else {
           resultDiv.textContent = 'Error: ' + (out.detail || 'Unknown error');
