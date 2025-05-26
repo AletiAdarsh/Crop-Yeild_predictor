@@ -6,30 +6,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;400&display=swap" rel="stylesheet">
   <style>
-   body {
-  margin: 0;
-  min-height: 100vh;
-  background: radial-gradient(circle at 60% 10%, #e8fadf 40%, #d0edb3 100%);
-  font-family: 'Montserrat', sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-.card {
-  background: rgba(255,255,255,0.95);
-  border-radius: 24px;
-  box-shadow: 0 8px 32px 0 rgba(34, 139, 34, 0.15);
-  padding: 2.5rem 2.8rem 1.8rem 2.8rem;
-  max-width: 560px;
-  width: 100%;
-  margin-bottom: 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at 60% 10%, #e8fadf 40%, #d0edb3 100%);
+      font-family: 'Montserrat', sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 24px;
+      box-shadow: 0 8px 32px 0 rgba(34, 139, 34, 0.15);
+      padding: 2.5rem 2.8rem 1.8rem 2.8rem;
+      max-width: 560px;
+      width: 100%;
+      margin-bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
     .card h2 {
       margin-top: 0;
       margin-bottom: 0.2em;
@@ -51,9 +49,9 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1.1em 1.5em;
-      width: 100%;
+      width: 100%;                /* Use all available width */
       margin-bottom: 1.4em;
-      max-width:360px;
+      /* REMOVE max-width here */
     }
     .input-group {
       display: flex;
@@ -168,7 +166,7 @@
       font-size: 0.97em;
       text-align: center;
     }
-    @media (max-width: 600px) {
+    @media (max-width: 700px) {
       .card { max-width: 99vw; padding: 1.2em 0.5em; }
       .input-grid { grid-template-columns: 1fr; }
       .predict-btn { font-size: 1em; padding: 11px 0; }
